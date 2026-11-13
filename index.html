@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Bitácora Mágica | Disney Edition</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fuentes de Google estilo cuento de hadas -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fairy: ['"Cinzel Decorative"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        disney: {
+                            night: '#060b19',
+                            deep: '#0d1936',
+                            royal: '#1d4ed8',
+                            magic: '#38bdf8',
+                            gold: '#fbbf24',
+                            goldLight: '#fef08a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Fondo estrellado mágico */
+        body {
+            background: radial-gradient(ellipse at top, #132754 0%, #060b19 75%);
+            background-attachment: fixed;
+        }
+        /* Destello dorado en hover */
+        .magic-card {
+            background: rgba(13, 25, 54, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .magic-card:hover {
+            border-color: #fbbf24;
+            box-shadow: 0 0 25px rgba(251, 191, 36, 0.25);
+            transform: translateY(-4px);
+        }
+        /* Polvo de hadas animado en el fondo */
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #fef08a, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 40px, #38bdf8, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 160px 120px, #fbbf24, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 250px 250px;
+            opacity: 0.4;
+            animation: twinkle 6s infinite alternate;
+            z-index: 0;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.25; }
+            100% { opacity: 0.65; }
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col font-sans relative pb-20">
+
+    <!-- Capa de estrellas -->
+    <div class="stars"></div>
+
+    <!-- Elemento de Audio para tu cancion.mp3 local -->
+    <audio id="bg-music" loop>
+        <source src="cancion.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Reproductor de Música Flotante -->
+    <div class="fixed bottom-4 right-4 z-40 bg-disney-deep/90 backdrop-blur-md border border-disney-gold/40 px-4 py-2.5 rounded-full shadow-2xl flex items-center space-x-3 text-xs">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-r from-amber-400 to-disney-gold flex items-center justify-center text-disney-night animate-pulse">
+            <i class="fa-solid fa-music text-xs"></i>
+        </div>
+        <div class="hidden sm:block">
+            <p class="font-bold text-disney-goldLight" id="music-title-display">Música Mágica</p>
+            <p class="text-[10px] text-sky-300">Ambiente de fondo</p>
+        </div>
+        <div class="flex items-center space-x-2 border-l border-white/10 pl-3">
+            <button onclick="app.toggleMusic()" id="music-play-btn" class="w-8 h-8 rounded-full bg-disney-night hover:bg-sky-500/20 text-disney-gold flex items-center justify-center transition-colors border border-disney-gold/30" title="Reproducir / Pausar música">
+                <i class="fa-solid fa-play text-xs" id="music-icon"></i>
+            </button>
+            <input type="range" min="0" max="1" step="0.05" value="0.4" onchange="app.changeVolume(this.value)" class="w-16 accent-disney-gold cursor-pointer hidden sm:block">
+        </div>
+    </div>
+
+    <!-- Header Mágico -->
+    <header class="bg-disney-night/80 backdrop-blur-md border-b border-disney-gold/20 sticky top-0 z-30 shadow-lg shadow-black/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3.5 cursor-pointer group" onclick="app.setView('home')">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-disney-royal to-sky-400 p-[2px] shadow-lg shadow-sky-500/30 group-hover:scale-105 transition-transform">
+                    <div class="w-full h-full bg-disney-night rounded-2xl flex items-center justify-center text-disney-gold">
+                        <i class="fa-brands fa-fort-awesome text-2xl"></i>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-fairy font-bold bg-gradient-to-r from-disney-goldLight via-disney-gold to-amber-500 bg-clip-text text-transparent tracking-wide">
+                        Bitácora Mágica
+                    </h1>
+                    <p class="text-[11px] text-sky-300/80 tracking-widest uppercase">Historias, Recuerdos & Sueños</p>
+                </div>
+            </div>
+            
+            <button onclick="app.openModal()" class="bg-gradient-to-r from-amber-400 via-disney-gold to-yellow-500 hover:from-yellow-300 hover:to-amber-400 text-disney-night font-bold px-5 py-2.5 rounded-full text-sm shadow-lg shadow-amber-500/25 transition-all flex items-center space-x-2 hover:scale-105">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Nueva Historia</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        
+        <!-- Filtros por Reinos / Temas y Buscador -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div id="topics-filter" class="flex items-center space-x-2 overflow-x-auto pb-2 md:pb-0">
+                <!-- Botones de temas dinámicos -->
+            </div>
+            
+            <div class="relative min-w-[260px]">
+                <i class="fa-solid fa-sparkles absolute left-4 top-1/2 -translate-y-1/2 text-disney-gold text-sm"></i>
+                <input type="text" id="search-input" oninput="app.handleSearch(this.value)" placeholder="Buscar en el reino..." class="w-full pl-10 pr-4 py-2.5 bg-disney-deep/90 border border-sky-400/25 rounded-full text-sm text-white placeholder-slate-400 focus:outline-none focus:border-disney-gold focus:ring-2 focus:ring-disney-gold/20">
+            </div>
+        </div>
+
+        <!-- Vista de Inicio (Grid de Tarjetas) -->
+        <div id="view-home">
+            <div id="entries-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+                <!-- Se llena con JS -->
+            </div>
+            
+            <div id="empty-state" class="hidden text-center py-20 magic-card rounded-3xl">
+                <div class="w-20 h-20 bg-disney-royal/20 border border-disney-gold/30 rounded-full flex items-center justify-center mx-auto text-disney-gold text-3xl mb-4">
+                    <i class="fa-solid fa-hat-wizard"></i>
+                </div>
+                <h3 class="text-xl font-fairy text-disney-goldLight">El libro está en blanco</h3>
+                <p class="text-sm text-slate-300 mt-2">Usa tu varita y crea la primera página mágica de tu colección.</p>
+            </div>
+        </div>
+
+        <!-- Vista de Detalle de la Página -->
+        <div id="view-detail" class="hidden max-w-4xl mx-auto">
+            <button onclick="app.setView('home')" class="inline-flex items-center space-x-2 text-sm text-sky-300 hover:text-disney-gold mb-6 font-medium transition-colors bg-disney-deep/80 px-4 py-2 rounded-full border border-sky-400/20">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Volver al Castillo</span>
+            </button>
+            
+            <div id="detail-content" class="magic-card rounded-3xl overflow-hidden p-6 sm:p-10 shadow-2xl">
+                <!-- Contenido completo de la entrada -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 py-6 text-center text-xs text-slate-400 relative z-10">
+        <p><i class="fa-solid fa-star text-disney-gold mr-1"></i> Donde los sueños y las historias cobran vida <i class="fa-solid fa-star text-disney-gold ml-1"></i></p>
+    </footer>
+
+    <!-- Modal para Crear / Editar -->
+    <div id="entry-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-disney-deep border border-disney-gold/40 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6 sm:p-8 text-slate-100">
+            <div class="flex items-center justify-between mb-6 border-b border-white/10 pb-4">
+                <div class="flex items-center space-x-2.5">
+                    <i class="fa-solid fa-wand-sparkles text-disney-gold text-xl"></i>
+                    <h2 id="modal-title" class="text-xl font-fairy font-bold text-disney-goldLight">Nueva Historia Mágica</h2>
+                </div>
+                <button onclick="app.closeModal()" class="text-slate-400 hover:text-disney-gold p-1 transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="entry-form" onsubmit="app.saveEntry(event)" class="space-y-4">
+                <input type="hidden" id="entry-id">
+                
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-sky-300 mb-1.5">Título de la Página</label>
+                    <input type="text" id="entry-title" required class="w-full px-4 py-2.5 bg-disney-night/80 border border-sky-400/30 rounded-xl text-sm text-white focus:outline-none focus:border-disney-gold" placeholder="Ej: Un día en Magic Kingdom o Mi película favorita">
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-sky-300 mb-1.5">Tema / Mundo</label>
+                        <input type="text" id="entry-topic" required class="w-full px-4 py-2.5 bg-disney-night/80 border border-sky-400/30 rounded-xl text-sm text-white focus:outline-none focus:border-disney-gold" placeholder="Ej: Pixar, Clásicos, Parques, Música">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-sky-300 mb-1.5">URL de Foto (Opcional)</label>
+                        <input type="url" id="entry-image" class="w-full px-4 py-2.5 bg-disney-night/80 border border-sky-400/30 rounded-xl text-sm text-white focus:outline-none focus:border-disney-gold" placeholder="https://ejemplo.com/foto.jpg">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-sky-300 mb-1.5">Subir Video desde tu Equipo</label>
+                    <input type="file" accept="video/*" onchange="app.handleVideoFile(this)" class="w-full px-4 py-2 bg-disney-night/80 border border-sky-400/30 rounded-xl text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-disney-gold file:text-disney-night hover:file:bg-amber-300 cursor-pointer">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-sky-300 mb-1.5">O URL de YouTube (Alternativa)</label>
+                    <input type="url" id="entry-video-url" class="w-full px-4 py-2.5 bg-disney-night/80 border border-sky-400/30 rounded-xl text-sm text-white focus:outline-none focus:border-disney-gold" placeholder="https://www.youtube.com/watch?v=...">
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-sky-300 mb-1.5">Relato / Contenido del Tema</label>
+                    <textarea id="entry-body" rows="5" required class="w-full px-4 py-2.5 bg-disney-night/80 border border-sky-400/30 rounded-xl text-sm text-white focus:outline-none focus:border-disney-gold" placeholder="Érase una vez..."></textarea>
+                </div>
+                
+                <div class="flex items-center justify-end space-x-3 pt-4 border-t border-white/10">
+                    <button type="button" onclick="app.closeModal()" class="px-5 py-2.5 border border-white/20 rounded-full text-sm font-medium text-slate-300 hover:bg-white/5 transition-colors">Cancelar</button>
+                    <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-amber-400 to-disney-gold hover:from-yellow-300 hover:to-amber-400 text-disney-night font-bold rounded-full text-sm shadow-lg shadow-amber-500/20">Guardar Magia</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lógica de la Aplicación -->
+    <script>
+        class DisneyBitacora {
+            constructor() {
+                this.entries = JSON.parse(localStorage.getItem('disney_bitacora_entries')) || [
+                    {
+                        id: '101',
+                        title: 'La magia de los fuegos artificiales en el Castillo',
+                        topic: 'Parques',
+                        date: '2026-11-10',
+                        image: 'https://images.unsplash.com/photo-1597466599360-3b9775841aec?auto=format&fit=crop&w=900&q=80',
+                        video: '',
+                        body: 'No hay nada comparable con ver el cielo iluminarse sobre el castillo mientras suena la banda sonora de las películas clásicas. Cada destello dorado recuerda que nunca dejamos de ser niños.'
+                    },
+                    {
+                        id: '102',
+                        title: 'Bandas sonoras inolvidables de Disney',
+                        topic: 'Música',
+                        date: '2026-11-12',
+                        image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=900&q=80',
+                        video: 'https://www.youtube.com/watch?v=L0MK7qz13bU',
+                        body: 'Desde las melodías orquestales de Alan Menken hasta los éxitos modernos, la música siempre ha sido el corazón de cada historia animada. Aquí dejo uno de los momentos musicales más icónicos.'
+                    }
+                ];
+                this.currentFilter = 'Todos';
+                this.searchQuery = '';
+                this.currentView = 'home';
+                this.tempVideoData = '';
+                this.audioElement = document.getElementById('bg-music');
+                this.init();
+            }
+
+            init() {
+                this.renderTopics();
+                this.renderEntries();
+            }
+
+            toggleMusic() {
+                const icon = document.getElementById('music-icon');
+                if (this.audioElement.paused) {
+                    this.audioElement.currentTime = 0;
+                    let playPromise = this.audioElement.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            icon.className = "fa-solid fa-pause text-xs";
+                        }).catch(error => {
+                            console.log("Error al reproducir audio:", error);
+                        });
+                    }
+                } else {
+                    this.audioElement.pause();
+                    icon.className = "fa-solid fa-play text-xs";
+                }
+            }
+
+            changeVolume(val) {
+                this.audioElement.volume = val;
+            }
+
+            saveToStorage() {
+                try {
+                    localStorage.setItem('disney_bitacora_entries', JSON.stringify(this.entries));
+                } catch (e) {
+                    alert('El archivo de video es demasiado grande para guardarlo en la memoria del navegador. Te recomendamos usar videos cortos.');
+                }
+            }
+
+            setView(view, id = null) {
+                this.currentView = view;
+                document.getElementById('view-home').classList.toggle('hidden', view !== 'home');
+                document.getElementById('view-detail').classList.toggle('hidden', view !== 'detail');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                if (view === 'detail' && id) {
+                    this.renderDetail(id);
+                } else {
+                    this.renderEntries();
+                }
+            }
+
+            renderTopics() {
+                const topics = ['Todos', ...new Set(this.entries.map(e => e.topic))];
+                const container = document.getElementById('topics-filter');
+                
+                container.innerHTML = topics.map(topic => `
+                    <button onclick="app.filterByTopic('${topic}')" class="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all flex items-center space-x-1.5 ${
+                        this.currentFilter === topic 
+                        ? 'bg-gradient-to-r from-amber-400 to-disney-gold text-disney-night shadow-md shadow-amber-500/25' 
+                        : 'bg-disney-deep/80 text-sky-200 border border-sky-400/25 hover:border-disney-gold/60'
+                    }">
+                        ${this.currentFilter === topic ? '<i class="fa-solid fa-star text-xs"></i>' : ''}
+                        <span>${topic}</span>
+                    </button>
+                `).join('');
+            }
+
+            filterByTopic(topic) {
+                this.currentFilter = topic;
+                this.renderTopics();
+                this.renderEntries();
+            }
+
+            handleSearch(query) {
+                this.searchQuery = query.toLowerCase();
+                this.renderEntries();
+            }
+
+            getFilteredEntries() {
+                return this.entries.filter(entry => {
+                    const matchesTopic = this.currentFilter === 'Todos' || entry.topic === this.currentFilter;
+                    const matchesSearch = entry.title.toLowerCase().includes(this.searchQuery) || 
+                                          entry.body.toLowerCase().includes(this.searchQuery);
+                    return matchesTopic && matchesSearch;
+                });
+            }
+
+            renderEntries() {
+                const grid = document.getElementById('entries-grid');
+                const emptyState = document.getElementById('empty-state');
+                const filtered = this.getFilteredEntries();
+
+                if (filtered.length === 0) {
+                    grid.innerHTML = '';
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+
+                emptyState.classList.add('hidden');
+                grid.innerHTML = filtered.map(entry => `
+                    <div onclick="app.setView('detail', '${entry.id}')" class="magic-card rounded-3xl overflow-hidden cursor-pointer flex flex-col group">
+                        ${entry.image ? `
+                            <div class="h-52 overflow-hidden bg-disney-night relative">
+                                <img src="${entry.image}" alt="${entry.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t from-disney-deep via-transparent to-transparent opacity-80"></div>
+                                ${entry.video ? `<span class="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-disney-gold px-2.5 py-1 rounded-full text-xs border border-disney-gold/40"><i class="fa-solid fa-play mr-1"></i>Video</span>` : ''}
+                            </div>
+                        ` : `
+                            <div class="h-36 bg-gradient-to-br from-disney-royal/40 to-disney-night flex items-center justify-center text-disney-gold text-3xl">
+                                <i class="fa-brands fa-fort-awesome"></i>
+                            </div>
+                        `}
+                        <div class="p-6 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="px-3 py-1 bg-sky-500/15 border border-sky-400/30 text-sky-300 rounded-full text-xs font-semibold">
+                                        <i class="fa-solid fa-sparkles text-disney-gold mr-1 text-[10px]"></i>${entry.topic}
+                                    </span>
+                                    <span class="text-xs text-slate-400">${entry.date}</span>
+                                </div>
+                                <h3 class="font-bold text-white text-lg mb-2 group-hover:text-disney-gold transition-colors leading-snug">${entry.title}</h3>
+                                <p class="text-sm text-slate-300 line-clamp-2">${entry.body}</p>
+                            </div>
+                            <div class="mt-5 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-semibold text-disney-gold">
+                                <span>Abrir historia</span>
+                                <i class="fa-solid fa-wand-magic-sparkles group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            renderDetail(id) {
+                const entry = this.entries.find(e => e.id === id);
+                if (!entry) return;
+
+                let videoEmbed = '';
+                if (entry.video) {
+                    if (entry.video.includes('youtube.com') || entry.video.includes('youtu.be')) {
+                        const videoId = entry.video.split('v=')[1]?.split('&')[0] || entry.video.split('/').pop();
+                        videoEmbed = `
+                            <div class="aspect-video w-full rounded-2xl overflow-hidden bg-black mb-6 border border-disney-gold/30 shadow-xl">
+                                <iframe src="https://www.youtube.com/embed/${videoId}" class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                        `;
+                    } else {
+                        videoEmbed = `
+                            <div class="mb-6 rounded-2xl overflow-hidden border border-disney-gold/30 shadow-xl bg-black">
+                                <video src="${entry.video}" controls class="w-full max-h-[500px] mx-auto"></video>
+                            </div>
+                        `;
+                    }
+                }
+
+                const container = document.getElementById('detail-content');
+                container.innerHTML = `
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="px-3.5 py-1 bg-sky-500/15 border border-sky-400/30 text-sky-300 rounded-full text-xs font-semibold">
+                            <i class="fa-solid fa-sparkles text-disney-gold mr-1"></i>${entry.topic}
+                        </span>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs text-slate-400 mr-2">${entry.date}</span>
+                            <button onclick="app.openModal('${entry.id}')" class="p-2 text-sky-300 hover:text-disney-gold rounded-full hover:bg-white/5 transition-colors" title="Editar">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="app.deleteEntry('${entry.id}')" class="p-2 text-sky-300 hover:text-rose-400 rounded-full hover:bg-white/5 transition-colors" title="Eliminar">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <h1 class="text-2xl sm:text-4xl font-fairy font-bold text-disney-goldLight mb-6 leading-tight">${entry.title}</h1>
+                    
+                    ${entry.image ? `
+                        <div class="mb-6 rounded-2xl overflow-hidden bg-disney-night max-h-[460px] border border-white/10">
+                            <img src="${entry.image}" alt="${entry.title}" class="w-full h-full object-cover">
+                        </div>
+                    ` : ''}
+
+                    ${videoEmbed}
+
+                    <div class="text-slate-200 text-base leading-relaxed whitespace-pre-wrap mb-8">
+                        ${entry.body}
+                    </div>
+
+                    <div class="border-t border-white/10 pt-6 mt-8">
+                        <h4 class="text-xs font-bold uppercase tracking-widest text-disney-gold mb-4">
+                            <i class="fa-solid fa-star mr-1"></i> Más historias en ${entry.topic}
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            ${this.entries.filter(e => e.topic === entry.topic && e.id !== entry.id).map(rel => `
+                                <div onclick="app.setView('detail', '${rel.id}')" class="p-4 rounded-2xl border border-sky-400/20 hover:border-disney-gold cursor-pointer transition-all bg-disney-night/60">
+                                    <h5 class="font-semibold text-sm text-white line-clamp-1">${rel.title}</h5>
+                                    <span class="text-xs text-slate-400 mt-1 block">${rel.date}</span>
+                                </div>
+                            `).join('') || '<p class="text-sm text-slate-400 italic">Aún no hay otras historias en este mundo.</p>'}
+                        </div>
+                    </div>
+                `;
+            }
+
+            openModal(id = null) {
+                document.getElementById('entry-modal').classList.remove('hidden');
+                this.tempVideoData = '';
+                
+                if (id) {
+                    const entry = this.entries.find(e => e.id === id);
+                    document.getElementById('modal-title').textContent = 'Editar Historia';
+                    document.getElementById('entry-id').value = entry.id;
+                    document.getElementById('entry-title').value = entry.title;
+                    document.getElementById('entry-topic').value = entry.topic;
+                    document.getElementById('entry-image').value = entry.image || '';
+                    document.getElementById('entry-video-url').value = entry.video && entry.video.startsWith('http') ? entry.video : '';
+                    document.getElementById('entry-body').value = entry.body;
+                    this.tempVideoData = entry.video && !entry.video.startsWith('http') ? entry.video : '';
+                } else {
+                    document.getElementById('modal-title').textContent = 'Nueva Historia Mágica';
+                    document.getElementById('entry-form').reset();
+                    document.getElementById('entry-id').value = '';
+                }
+            }
+
+            closeModal() {
+                document.getElementById('entry-modal').classList.add('hidden');
+            }
+
+            handleVideoFile(input) {
+                const file = input.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.tempVideoData = e.target.result;
+                        document.getElementById('entry-video-url').value = '';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            saveEntry(event) {
+                event.preventDefault();
+                const id = document.getElementById('entry-id').value;
+                const title = document.getElementById('entry-title').value;
+                const topic = document.getElementById('entry-topic').value.trim();
+                const image = document.getElementById('entry-image').value;
+                const videoUrl = document.getElementById('entry-video-url').value.trim();
+                const body = document.getElementById('entry-body').value;
+                const date = new Date().toISOString().split('T')[0];
+
+                const finalVideo = this.tempVideoData || videoUrl;
+
+                if (id) {
+                    const index = this.entries.findIndex(e => e.id === id);
+                    if (index !== -1) {
+                        this.entries[index] = { ...this.entries[index], title, topic, image, video: finalVideo, body };
+                    }
+                } else {
+                    const newEntry = { id: Date.now().toString(), title, topic, image, video: finalVideo, body, date };
+                    this.entries.unshift(newEntry);
+                }
+
+                this.saveToStorage();
+                this.closeModal();
+                this.renderTopics();
+                
+                if (this.currentView === 'detail' && id) {
+                    this.renderDetail(id);
+                } else {
+                    this.renderEntries();
+                }
+            }
+
+            deleteEntry(id) {
+                if (confirm('¿Deseas borrar esta historia del libro?')) {
+                    this.entries = this.entries.filter(e => e.id !== id);
+                    this.saveToStorage();
+                    this.setView('home');
+                    this.renderTopics();
+                }
+            }
+        }
+
+        const app = new DisneyBitacora();
+    </script>
+</body>
+</html>

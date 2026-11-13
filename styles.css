@@ -1,0 +1,44 @@
+/* Fondo estrellado mágico */
+body {
+    background: radial-gradient(ellipse at top, #132754 0%, #060b19 75%);
+    background-attachment: fixed;
+}
+
+/* Estilo de tarjetas con efecto cristal y destello dorado en hover */
+.magic-card {
+    background: rgba(13, 25, 54, 0.75);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.magic-card:hover {
+    border-color: #fbbf24;
+    box-shadow: 0 0 25px rgba(251, 191, 36, 0.25);
+    transform: translateY(-4px);
+}
+
+/* Polvo de hadas / Estrellas animadas en el fondo */
+.stars {
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    pointer-events: none;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, #fef08a, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 90px 40px, #38bdf8, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 160px 120px, #fbbf24, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 250px 250px;
+    opacity: 0.4;
+    animation: twinkle 6s infinite alternate;
+    z-index: 0;
+}
+
+@keyframes twinkle {
+    0% { opacity: 0.25; }
+    100% { opacity: 0.65; }
+}
